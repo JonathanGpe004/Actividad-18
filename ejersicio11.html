@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación de Notas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        #noteInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        #addNoteBtn {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #addNoteBtn:hover {
+            background-color: #45a049;
+        }
+        .note {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .deleteBtn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .deleteBtn:hover {
+            background-color: #e60000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aplicación de Notas</h1>
+    <input type="text" id="noteInput" placeholder="Escribe tu nota aquí...">
+    <button id="addNoteBtn">Agregar Nota</button>
+    <div id="notesContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadNotes();
+        });
+
+        document.getElementById('addNoteBtn').addEventListener('click', () => {
+            const noteInput = document.getElementById('noteInput');
+            const noteText = noteInput.value.trim();
+            if (noteText) {
+                addNoteToDOM(noteText);
+                saveNoteToLocalStorage(noteText);
+                noteInput.value = '';
+            }
+        });
+
+        function addNoteToDOM(noteText) {
+            const noteDiv = document.createElement('div');
+            noteDiv.className = 'note';
+            noteDiv.textContent = noteText;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'deleteBtn';
+            deleteBtn.textContent = 'Eliminar';
+            deleteBtn.addEventListener('click', () => {
+                noteDiv.remove();
+                deleteNoteFromLocalStorage(noteText);
+            });
+
+            noteDiv.appendChild(deleteBtn);
+            document.getElementById('notesContainer').appendChild(noteDiv);
+        }
+
+        function saveNoteToLocalStorage(noteText) {
+            let notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes.push(noteText);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function deleteNoteFromLocalStorage(noteText) {
+            let notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes = notes.filter(note => note !== noteText);
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes.forEach(noteText => {
+                addNoteToDOM(noteText);
+            });
+        }
+    </script>
+</body>
+</html>
